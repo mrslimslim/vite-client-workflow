@@ -1,57 +1,71 @@
 <template>
   <div class="home-page">
-     <div><button @click="handleChoosePath">选择路径</button></div>
-     <div>当前路径: {{dirPath}}</div>
-     <div>创建项目名称 <input @change="handleChangeProjectName" type="text"></div>
-     <div>
-       <button @click="createProject">writeSomething</button>
-     </div>
-     <div>
-       <button @click="showFinder">show Finder</button>
-     </div>
-     <button @click="getGitInfo">获取GIT信息</button>
-     <div class="git-info">
-       <div>
-          git信息展示
-       </div>
-     </div>
+    <div>
+      <button @click="handleChoosePath">
+        选择路径
+      </button>
+    </div>
+    <div>当前路径: {{ dirPath }}</div>
+    <div>
+      创建项目名称 <input
+        type="text"
+        @change="handleChangeProjectName"
+      >
+    </div>
+    <div>
+      <button @click="createProject">
+        writeSomething
+      </button>
+    </div>
+    <div>
+      <button @click="showFinder">
+        show Finder
+      </button>
+    </div>
+    <button @click="getGitInfo">
+      获取GIT信息
+    </button>
+    <div class="git-info">
+      <div>
+        git信息展示
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-const { ipcRenderer } = require("electron");
-import {defineComponent, ref} from 'vue';
+import { defineComponent } from 'vue';
+const { ipcRenderer } = require('electron');
 export default defineComponent({
   name: 'Home',
-  setup() {
-  },
-  data(){
+
+  data() {
     return {
       dirPath: '',
-      projectName: ''
+      projectName: '',
     };
   },
-  methods:{
-    async handleChoosePath(){
+  methods: {
+    async handleChoosePath() {
       const res = await ipcRenderer.invoke('openDialog');
       this.dirPath = res.filePaths[0];
     },
-    handleChangeProjectName(e: any){
-      console.log(e.target.value)
+    handleChangeProjectName(e: any) {
+      console.log(e.target.value);
       this.projectName = e.target.value;
     },
-    async createProject(){
-       await ipcRenderer.invoke('writeFile', this.dirPath);
+    async createProject() {
+      await ipcRenderer.invoke('writeFile', this.dirPath);
       // fs.writeFileSync(this.dirPath+'/text.txt','something')
     },
-    async showFinder(){
+    async showFinder() {
       await ipcRenderer.invoke('showInFinder', this.dirPath);
     },
-    async getGitInfo(){
+    async getGitInfo() {
       const ret = await ipcRenderer.invoke('getGitInfo', this.dirPath);
       console.log(ret);
-    }
-  }
+    },
+  },
 });
 </script>
 

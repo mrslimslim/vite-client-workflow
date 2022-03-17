@@ -1,6 +1,8 @@
-import {app, BrowserWindow, ipcMain, dialog, shell} from 'electron';
-import {join} from 'path';
-import {URL} from 'url';
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
+import { join } from 'path';
+import { URL } from 'url';
+const download = require('download-git-repo');
+const path = require('path');
 const fs = require('fs');
 const simpleGit = require('simple-git');
 
@@ -17,7 +19,7 @@ app.disableHardwareAcceleration();
 if (import.meta.env.MODE === 'development') {
   app.whenReady()
     .then(() => import('electron-devtools-installer'))
-    .then(({default: installExtension, VUEJS3_DEVTOOLS}) => installExtension(VUEJS3_DEVTOOLS, {
+    .then(({ default: installExtension, VUEJS3_DEVTOOLS }) => installExtension(VUEJS3_DEVTOOLS, {
       loadExtensionOptions: {
         allowFileAccess: true,
       },
@@ -29,10 +31,13 @@ let mainWindow: BrowserWindow | null = null;
 
 const createWindow = async () => {
   mainWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    titleBarStyle: 'hiddenInset',
     show: false, // Use 'ready-to-show' event to show window
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation:false,
+      contextIsolation: false,
       nativeWindowOpen: true,
       preload: join(__dirname, '../../preload/dist/index.cjs'),
     },
@@ -59,7 +64,7 @@ const createWindow = async () => {
    */
   const pageUrl = import.meta.env.MODE === 'development' && import.meta.env.VITE_DEV_SERVER_URL !== undefined
     ? import.meta.env.VITE_DEV_SERVER_URL
-    : new URL('../renderer/dist/index.html', 'file://' + __dirname).toString();
+    : new URL('../renderer/dist/index.html', `file://${__dirname}`).toString();
 
 
   await mainWindow.loadURL(pageUrl);
@@ -81,21 +86,21 @@ app.on('window-all-closed', () => {
   }
 });
 
-ipcMain.handle('openDialog', async ()=>{
-  const result = await dialog.showOpenDialog({ properties: ['openDirectory'] })
+ipcMain.handle('openDialog', async () => {
+  const result = await dialog.showOpenDialog({ properties: ['openDirectory'] });
   return result;
-})
+});
 
-ipcMain.handle('writeFile', async (event, path)=>{
-  console.log('path',path)
-  fs.writeFileSync(path+'/text.txt','something')
-})
+ipcMain.handle('writeFile', async (event, path) => {
+  console.log('path', path);
+  fs.writeFileSync(`${path}/text.txt`, 'something');
+});
 
-ipcMain.handle('showInFinder', async (event, path)=>{
+ipcMain.handle('showInFinder', async (event, path) => {
   shell.showItemInFolder(path);
-})
+});
 
-ipcMain.handle('getGitInfo', async (event, path)=>{
+ipcMain.handle('getGitInfo', async (event, path) => {
   console.log('path', path);
   const git = simpleGit(path, { binary: 'git' });
   // const config = git.getConfig('user.name', 'global');
@@ -103,19 +108,42 @@ ipcMain.handle('getGitInfo', async (event, path)=>{
   const config = git.listConfig('local');
   // const url = config['values']['.git/config']['remote.origin.url'];
   return config;
-})
+});
+
+const url = 'https://git.woa.com/tengyu/fe-mono.git';
+// const targetDir = path.resolve(process.cwd(), '');
+
+ipcMain.handle('download', async (event, path) => {
+  console.log('path', path);
+  const targetDir = `${path.dirPath}/${path.projectName}`;
+  fs.mkdir(targetDir, { recursive: true }, (err: any) => {
+    if (err) throw err;
+    download(
+      `direct:${url}`,  // 模版地址
+      targetDir,  // 目标文件夹
+      { clone: true }, // 启用clone
+      (err:any) => { // 回调函数
+        if (err) {
+          console.log('失败', err);
+        } else {
+          console.log('成功');
+        }
+      },
+    );
+  });
+});
 
 
 app.whenReady()
   .then(createWindow)
-  .catch((e) => console.error('Failed create window:', e));
+  .catch(e => console.error('Failed create window:', e));
 
 
 // Auto-updates
 if (import.meta.env.PROD) {
   app.whenReady()
     .then(() => import('electron-updater'))
-    .then(({autoUpdater}) => autoUpdater.checkForUpdatesAndNotify())
-    .catch((e) => console.error('Failed check updates:', e));
+    .then(({ autoUpdater }) => autoUpdater.checkForUpdatesAndNotify())
+    .catch(e => console.error('Failed check updates:', e));
 }
 

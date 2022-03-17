@@ -1,6 +1,6 @@
-import {node} from '../../electron-vendors.config.json';
-import {join} from 'path';
-import {builtinModules} from 'module';
+import { node } from '../../electron-vendors.config.json';
+import { join } from 'path';
+import { builtinModules } from 'module';
 
 const PACKAGE_ROOT = __dirname;
 
@@ -15,7 +15,7 @@ const config = {
   envDir: process.cwd(),
   resolve: {
     alias: {
-      '/@/': join(PACKAGE_ROOT, 'src') + '/',
+      '/@/': `${join(PACKAGE_ROOT, 'src')}/`,
     },
   },
   build: {
@@ -24,13 +24,6 @@ const config = {
     outDir: 'dist',
     assetsDir: '.',
     minify: process.env.MODE === 'development' ? false : 'terser',
-    terserOptions: {
-      ecma: 2020,
-      compress: {
-        passes: 2,
-      },
-      safari10: false,
-    },
     lib: {
       entry: 'src/index.ts',
       formats: ['cjs'],

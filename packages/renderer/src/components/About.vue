@@ -1,7 +1,4 @@
 <template>
-  <h2 id="versions">
-    Lib versions
-  </h2>
   <div>
     <ul aria-labelledby="versions">
       <li
@@ -15,14 +12,14 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
-import {useElectron} from '/@/use/electron';
+import { defineComponent } from 'vue';
+import { useElectron } from '/@/use/electron';
 export default defineComponent({
   name: 'App',
   setup() {
-    const {versions} = useElectron();
+    const { versions } = useElectron();
     // It makes no sense to make "versions" reactive
-    return {versions};
+    return { versions };
   },
 });
 </script>
