@@ -34,6 +34,8 @@ const createWindow = async () => {
     width: 1200,
     height: 800,
     titleBarStyle: 'hiddenInset',
+    transparent: true,
+    vibrancy: 'hud',
     show: false, // Use 'ready-to-show' event to show window
     webPreferences: {
       nodeIntegration: true,

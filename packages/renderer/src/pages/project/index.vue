@@ -1,28 +1,44 @@
 <template>
-  <el-container>
-    <el-header class="h-10" />
-    <el-container>
+  <div class="w-full">
+    <Header />
+    <el-container class="content-area">
       <el-aside
-        width="80px"
-        class="bg-white"
+        class="h-full"
+        :width="asideWidth"
       >
-        <nav-menu />
+        <left-side />
       </el-aside>
-      <el-main>
-        <router-view />
+      <el-main class="h-full">
+        <right-main />
       </el-main>
     </el-container>
-  </el-container>
+  </div>
 </template>
 
 <script lang='ts'>
-import NavMenu from '/@/components/Menu.vue';
+import Header from './components/Header.vue';
+import LeftSide from './components/LeftSide.vue';
+import RightMain from './components/RightMain.vue';
+import type { Ref} from 'vue';
+import { ref } from 'vue';
 export default {
   components: {
-    NavMenu,
+   'Header' : Header,
+   'left-side': LeftSide,
+   'right-main': RightMain,
+  },
+  setup(){
+    const asideWidth:Ref<string> = ref('200px');
+    return {
+      asideWidth,
+    };
   },
 
 };
 </script>
 
-<style></style>
+<style lang="less" scoped>
+ .content-area{
+   height: calc(100vh - 40px);
+ }
+</style>

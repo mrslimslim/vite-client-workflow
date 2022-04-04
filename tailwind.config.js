@@ -1,9 +1,9 @@
 module.exports = {
-  purge: [],
+  content: [
+    './index.html',
+    './packages/renderer/src/**/*.{vue,js,ts,jsx,tsx}',
+  ],
   theme: {
-    extend: {},
-  },
-  variants: {
     extend: {},
   },
   plugins: [],

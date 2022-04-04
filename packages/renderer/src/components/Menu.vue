@@ -14,15 +14,9 @@
 <script lang="ts">
 export default {
   setup()  {
-    const handleOpen = (key: string, keyPath: string): void => {
-      console.log(key, keyPath);
-    };
-    const handleClose = (key: string, keyPath: string): void => {
-      console.log(key, keyPath);
-    };
+    
     return {
-      handleOpen,
-      handleClose,
+     
     };
   },
 };

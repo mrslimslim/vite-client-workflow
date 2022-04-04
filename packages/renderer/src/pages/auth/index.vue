@@ -11,7 +11,7 @@ export default defineComponent({
     return {};
   },
   created() {
-    this.$router.push('/project/home');
+    this.$router.push('/project');
   },
 });
 </script>
